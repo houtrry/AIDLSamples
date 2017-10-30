@@ -2,10 +2,10 @@ package com.houtrry.aidlsamples.impl;
 
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 
-import com.houtrry.aidlsamples.aidl.Book;
 
 /**
  * @author: houtrry
@@ -21,15 +21,16 @@ public class NewBookArrivedListener extends Binder implements INewBookArrivedLis
 
     @Override
     public IBinder asBinder() {
-        return null;
+        return this;
     }
 
     public static INewBookArrivedListener asInterface(IBinder binder) {
         if (binder == null) {
             return null;
         }
-        if (binder != null && binder instanceof INewBookArrivedListener) {
-            return (INewBookArrivedListener) binder;
+        IInterface iInterface = binder.queryLocalInterface(DESCRIPTOR);
+        if (iInterface != null && iInterface instanceof INewBookArrivedListener) {
+            return (INewBookArrivedListener) iInterface;
         }
         return new Proxy(binder);
     }
@@ -41,25 +42,27 @@ public class NewBookArrivedListener extends Binder implements INewBookArrivedLis
 
     @Override
     protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        switch (code) {
-            case INTERFACE_TRANSACTION: {
-                reply.writeString(DESCRIPTOR);
-                return true;
-            }
-            case Transact_onNewBookArrived: {
-                data.enforceInterface(DESCRIPTOR);
-                Book book;
-                if (0 != data.readInt()) {
-                    book = Book.CREATOR.createFromParcel(data);
-                } else {
-                    book = null;
+        if (code == INTERFACE_TRANSACTION || code == Transact_onNewBookArrived) {
+            switch (code) {
+                case INTERFACE_TRANSACTION: {
+                    reply.writeString(DESCRIPTOR);
+                    return true;
                 }
-                this.onNewBookArrived(book);
-                reply.writeNoException();
-                return true;
+                case Transact_onNewBookArrived: {
+                    data.enforceInterface(DESCRIPTOR);
+                    Book book;
+                    if (0 != data.readInt()) {
+                        book = Book.CREATOR.createFromParcel(data);
+                    } else {
+                        book = null;
+                    }
+                    this.onNewBookArrived(book);
+                    reply.writeNoException();
+                    return true;
+                }
+                default:
+                    break;
             }
-            default:
-                break;
         }
         return super.onTransact(code, data, reply, flags);
     }
@@ -85,8 +88,8 @@ public class NewBookArrivedListener extends Binder implements INewBookArrivedLis
         public void onNewBookArrived(Book book) {
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
-            data.writeInterfaceToken(DESCRIPTOR);
             try {
+                data.writeInterfaceToken(DESCRIPTOR);
                 if (book != null) {
                     data.writeInt(1);
                     book.writeToParcel(data, 0);
@@ -94,7 +97,7 @@ public class NewBookArrivedListener extends Binder implements INewBookArrivedLis
                     data.writeInt(0);
                 }
                 remoteBinder.transact(Transact_onNewBookArrived, data, reply, 0);
-                reply.writeNoException();
+                reply.readException();
             } catch (RemoteException e) {
                 e.printStackTrace();
             } finally {

@@ -4,7 +4,6 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;
 
-import com.houtrry.aidlsamples.aidl.Book;
 
 import java.util.List;
 
@@ -16,12 +15,12 @@ import java.util.List;
 
 public interface IBookManager extends IInterface {
 
-    final String DESCRIPTOR = "com.houtrry.aidlsamples.impl.IBookManager";
+    String DESCRIPTOR = "com.houtrry.aidlsamples.impl.IBookManager";
 
-    final int TRANSACT_getBookList = IBinder.FIRST_CALL_TRANSACTION + 0;
-    final int TRANSACT_addBook = IBinder.FIRST_CALL_TRANSACTION + 1;
-    final int TRANSACT_addNewBookArrivedListener = IBinder.FIRST_CALL_TRANSACTION + 2;
-    final int TRANSACT_removeNewBookArrivedListener = IBinder.FIRST_CALL_TRANSACTION + 3;
+    int TRANSACT_getBookList = IBinder.FIRST_CALL_TRANSACTION + 0;
+    int TRANSACT_addBook = IBinder.FIRST_CALL_TRANSACTION + 1;
+    int TRANSACT_addNewBookArrivedListener = IBinder.FIRST_CALL_TRANSACTION + 2;
+    int TRANSACT_removeNewBookArrivedListener = IBinder.FIRST_CALL_TRANSACTION + 3;
 
     List<Book> getBookList() throws RemoteException;
 

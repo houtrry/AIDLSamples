@@ -17,6 +17,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Log.d(TAG, "onCreate: progressId: "+AndroidTools.getProgressId()+", progressName: "+AndroidTools.getProgressName(this));
+        Log.d(TAG, "onCreate: progressId: "+AndroidTools.getProcessId()+", progressName: "+AndroidTools.getProcessName(this));
     }
 }

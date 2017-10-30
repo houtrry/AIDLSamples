@@ -10,13 +10,16 @@ import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.houtrry.aidlsamples.aidl.Book;
+import com.houtrry.aidlsamples.impl.Book;
 import com.houtrry.aidlsamples.impl.BookManagerImpl;
 import com.houtrry.aidlsamples.impl.IBookManager;
 import com.houtrry.aidlsamples.impl.NewBookArrivedListener;
 
 import java.util.List;
 
+/**
+ * @author: houtrry
+ */
 public class Main2Activity extends AppCompatActivity {
 
     private static final String TAG = Main2Activity.class.getSimpleName();
@@ -52,17 +55,21 @@ public class Main2Activity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             IBookManager bookManager = BookManagerImpl.asInterface(service);
             mIBookManager = bookManager;
+            Log.d(TAG, "onServiceConnected: bookManager: "+bookManager+", service: "+service+", mNewBookArrivedListener: "+mNewBookArrivedListener);
+            Log.d(TAG, "onServiceConnected: mNewBookArrivedListener: "+mNewBookArrivedListener);
             try {
                 bookManager.addNewBookArrivedListener(mNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
             List<Book> bookList;
             try {
                 bookList = bookManager.getBookList();
                 Log.d(TAG, "onServiceConnected: bookList: "+bookList);
             } catch (RemoteException e) {
                 e.printStackTrace();
+                Log.e(TAG, "onServiceConnected: e: "+e);
             }
 
             try {
@@ -91,7 +98,7 @@ public class Main2Activity extends AppCompatActivity {
         @Override
         public void onNewBookArrived(Book book) {
             super.onNewBookArrived(book);
-            Log.d(TAG, "onNewBookArrived: ");
+            Log.d(TAG, "onNewBookArrived: "+book);
         }
     };
 }

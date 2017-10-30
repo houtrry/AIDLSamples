@@ -16,7 +16,7 @@ public class AndroidTools {
      *
      * @return 当前进程Id
      */
-    public static int getProgressId() {
+    public static int getProcessId() {
         return android.os.Process.myPid();
     }
 
@@ -26,7 +26,7 @@ public class AndroidTools {
      * @param context 上下文
      * @return 当前进程名称
      */
-    public static String getProgressName(Context context) {
+    public static String getProcessName(Context context) {
         int pid = android.os.Process.myPid();
         ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningAppProcessInfo appProcess : mActivityManager

@@ -8,7 +8,7 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.houtrry.aidlsamples.aidl.Book;
+import com.houtrry.aidlsamples.impl.Book;
 import com.houtrry.aidlsamples.impl.BookManagerImpl;
 import com.houtrry.aidlsamples.impl.INewBookArrivedListener;
 
@@ -28,7 +28,7 @@ public class BookManagerRemoteService2 extends Service {
     private static final String TAG = BookManagerRemoteService2.class.getSimpleName();
 
     private CopyOnWriteArrayList<Book> mBookList = new CopyOnWriteArrayList<>();
-    //    private CopyOnWriteArrayList<INewBookArrivedListener> mINewBookArrivedListeners = new CopyOnWriteArrayList<>();
+//    private CopyOnWriteArrayList<INewBookArrivedListener> mINewBookArrivedListeners = new CopyOnWriteArrayList<>();
 
     /**
      * !!!重要
@@ -85,20 +85,20 @@ public class BookManagerRemoteService2 extends Service {
 
         @Override
         public boolean addNewBookArrivedListener(INewBookArrivedListener newBookArrivedListener) throws RemoteException {
-            //            if (mINewBookArrivedListeners.contains(newBookArrivedListener)) {
-            //                Log.d(TAG, "addNewBookArrivedListener: has add this listener");
-            //                return false;
-            //            }
+//            if (mINewBookArrivedListeners.contains(newBookArrivedListener)) {
+//                Log.d(TAG, "addNewBookArrivedListener: has add this listener");
+//                return false;
+//            }
             mINewBookArrivedListeners.register(newBookArrivedListener);
             return true;
         }
 
         @Override
         public boolean removeNewBookArrivedListener(INewBookArrivedListener newBookArrivedListener) throws RemoteException {
-            //            if (!mINewBookArrivedListeners.contains(newBookArrivedListener)) {
-            //                Log.e(TAG, "addNewBookArrivedListener: don't add this listener");
-            //                return false;
-            //            }
+//            if (!mINewBookArrivedListeners.contains(newBookArrivedListener)) {
+//                Log.e(TAG, "addNewBookArrivedListener: don't add this listener");
+//                return false;
+//            }
 
             /**
              * mINewBookArrivedListeners.beginBroadcast()和mINewBookArrivedListeners.finishBroadcast();必须一起使用
@@ -119,10 +119,7 @@ public class BookManagerRemoteService2 extends Service {
             if (mIBookManager != null) {
                 mIBookManager.asBinder().unlinkToDeath(mDeathRecipient, 0);
                 mIBookManager = null;
-
                 // TODO: 2017/10/29 在这里重新绑定
-
-
             }
         }
     };
@@ -130,12 +127,11 @@ public class BookManagerRemoteService2 extends Service {
 
     private void arrivedNewBook(Book book) throws RemoteException {
         mBookList.add(book);
-        //        for (INewBookArrivedListener listener: mINewBookArrivedListeners) {
-        //            listener.onNewBookArrived(book);
-        //        }
+//        for (INewBookArrivedListener listener : mINewBookArrivedListeners) {
+//            listener.onNewBookArrived(book);
+//        }
 
         final int length = mINewBookArrivedListeners.beginBroadcast();
-
         for (int i = 0; i < length; i++) {
             INewBookArrivedListener listener = mINewBookArrivedListeners.getBroadcastItem(i);
             if (listener != null) {
@@ -144,6 +140,7 @@ public class BookManagerRemoteService2 extends Service {
                     listener.onNewBookArrived(book);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.d(TAG, "arrivedNewBook: " + e);
                 }
             }
         }
