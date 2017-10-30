@@ -56,6 +56,9 @@ public class BookManagerImpl extends Binder implements IBookManager {
                 return true;
             }
             case TRANSACT_addBook: {
+                /**
+                 * 跟上面比较, 注意方法有参和无参的区别, 有返回值和无返回值的区别
+                 */
                 data.enforceInterface(DESCRIPTOR);
                 Book book;
                 if (0 != data.readInt()) {
@@ -68,11 +71,21 @@ public class BookManagerImpl extends Binder implements IBookManager {
                 return true;
             }
             case TRANSACT_addNewBookArrivedListener: {
+                /**
+                 * 核能预警:
+                 * 这跟上面的很不一样, 要注意观察.
+                 */
                 data.enforceInterface(DESCRIPTOR);
                 INewBookArrivedListener listener;
+                /**
+                 * 上面有0 != data.readInt()的判断, 这里没有 !!!重要
+                 */
                 listener = NewBookArrivedListener.asInterface(data.readStrongBinder());
                 boolean result = this.addNewBookArrivedListener(listener);
                 reply.writeNoException();
+                /**
+                 * 返回值是boolean的时候的写法
+                 */
                 reply.writeInt(result ? 1 : 0);
                 return true;
             }
@@ -132,7 +145,6 @@ public class BookManagerImpl extends Binder implements IBookManager {
 
         @Override
         public List<Book> getBookList() throws RemoteException {
-            Log.d(TAG, "getBookList: ");
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
             List<Book> result = null;
@@ -141,9 +153,6 @@ public class BookManagerImpl extends Binder implements IBookManager {
                 remoteBinder.transact(TRANSACT_getBookList, data, reply, 0);
                 reply.readException();
                 result = reply.createTypedArrayList(Book.CREATOR);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "getBookList: " + e);
             } finally {
                 reply.recycle();
                 data.recycle();
@@ -177,20 +186,11 @@ public class BookManagerImpl extends Binder implements IBookManager {
         public boolean addNewBookArrivedListener(INewBookArrivedListener newBookArrivedListener) throws RemoteException {
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
-            Log.d(TAG, "addNewBookArrivedListener: ");
             boolean result;
             try {
-                Log.d(TAG, "addNewBookArrivedListener: newBookArrivedListener: " + newBookArrivedListener);
                 data.writeInterfaceToken(DESCRIPTOR);
-
-                IBinder iBinder = null;
-                if (newBookArrivedListener != null) {
-                    iBinder = newBookArrivedListener.asBinder();
-                }
-                Log.d(TAG, "addNewBookArrivedListener: iBinder: " + iBinder);
-                data.writeStrongBinder(iBinder);
+                data.writeStrongBinder(newBookArrivedListener != null ? newBookArrivedListener.asBinder() : null);
                 remoteBinder.transact(TRANSACT_addNewBookArrivedListener, data, reply, 0);
-                Log.d(TAG, "addNewBookArrivedListener: reply: " + reply);
                 reply.readException();
                 result = reply.readInt() != 0;
             } finally {
